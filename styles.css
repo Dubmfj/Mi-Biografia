@@ -1172,3 +1172,19 @@ body {
         text-align: center;
     }
 }
+
+.cta-github {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.btn-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.github-icon {
+  width: 24px;
+  height: 24px;
+}
