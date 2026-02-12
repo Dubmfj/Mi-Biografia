@@ -137,7 +137,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: url("4.jpg");
+    background: url("12.jpg");
     background-size: cover;
     padding-top: 80px;
     position: relative;
@@ -150,6 +150,14 @@ body {
         background-size: cover; /* se ajusta en móviles */
         background-repeat: no-repeat;
         background-position: center;
+    }
+}
+
+@media (min-width: 1350px)  {
+    .hero {
+        background: url("4.jpg");
+        background-size: cover; /* se ajusta en pantallas medianas */
+        background-repeat: no-repeat;
     }
 }
 
