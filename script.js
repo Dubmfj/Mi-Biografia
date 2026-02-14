@@ -1,13 +1,99 @@
+// ============ CONTROLES PERSONALIZADOS DEL VIDEO ============
+(function() {
+    const video = document.getElementById('futuroVideo');
+    if (!video) return;
+
+    const container = video.closest('.futuro-video-container');
+    const playBtn = container.querySelector('.vc-play');
+    const progress = container.querySelector('.vc-progress');
+    const progressFilled = container.querySelector('.vc-progress-filled');
+    const timeDisplay = container.querySelector('.vc-time');
+    const volumeSlider = container.querySelector('.vc-volume');
+    const fullscreenBtn = container.querySelector('.vc-fullscreen');
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function updatePlayIcon() {
+        const icon = video.paused ? '<i class="fas fa-play" aria-hidden="true"></i>' : '<i class="fas fa-pause" aria-hidden="true"></i>';
+        playBtn.innerHTML = icon;
+        playBtn.setAttribute('aria-label', video.paused ? 'Reproducir' : 'Pausar');
+    }
+
+    function updateProgress() {
+        const pct = (video.currentTime / video.duration) * 100;
+        progressFilled.style.width = isNaN(pct) ? '0%' : pct + '%';
+        timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+    }
+
+    function togglePlay() { if (video.paused) video.play(); else video.pause(); }
+
+    playBtn.addEventListener('click', togglePlay);
+    video.addEventListener('play', updatePlayIcon);
+    video.addEventListener('pause', updatePlayIcon);
+    video.addEventListener('timeupdate', updateProgress);
+    video.addEventListener('loadedmetadata', updateProgress);
+
+    progress.addEventListener('click', (e) => {
+        const rect = progress.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = x / rect.width;
+        video.currentTime = pct * video.duration;
+    });
+
+    volumeSlider.addEventListener('input', () => {
+        video.volume = parseFloat(volumeSlider.value);
+        video.muted = video.volume === 0;
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+        const el = container;
+        if (!document.fullscreenElement) {
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+    });
+
+
+    let hideTimeout;
+    function showControls() {
+        const controls = container.querySelector('.video-controls');
+        controls.style.opacity = '0.98';
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => { controls.style.opacity = '0.92'; }, 3000);
+    }
+    container.addEventListener('mousemove', showControls);
+    container.addEventListener('mouseleave', () => { container.querySelector('.video-controls').style.opacity = '0.85'; });
+
+
+    container.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePlay(); }
+        if (e.key === 'f') {
+            if (!document.fullscreenElement) container.requestFullscreen(); else document.exitFullscreen();
+        }
+        if (e.key === 'ArrowRight') video.currentTime = Math.min(video.duration, video.currentTime + 5);
+        if (e.key === 'ArrowLeft') video.currentTime = Math.max(0, video.currentTime - 5);
+    });
+
+    updatePlayIcon();
+    updateProgress();
+})();
 // ============ MENU RESPONSIVE ============
 const menuToggle = document.getElementById('menuToggle');
 const navLinks = document.getElementById('navLinks');
 
 menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');   // animación hamburguesa -> X
-    navLinks.classList.toggle('active');     // despliegue dropdown
+    menuToggle.classList.toggle('active'); 
+    navLinks.classList.toggle('active');     
 });
 
-// Cerrar menú al hacer click en un enlace SOLO en móviles
 document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
@@ -16,86 +102,6 @@ document.querySelectorAll('.nav-links a').forEach(link => {
         }
     });
 });
-
-
-// ============ FORMULARIO CONTACTO ============
-const contactForm = document.getElementById('contactForm');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const inputs = contactForm.querySelectorAll('input, textarea');
-        let allFilled = true;
-        
-        inputs.forEach(input => {
-            if (!input.value.trim()) {
-                allFilled = false;
-                input.style.borderColor = '#ff006e';
-            } else {
-                input.style.borderColor = '';
-            }
-        });
-        
-        if (allFilled) {
-            const btn = contactForm.querySelector('button');
-            const originalText = btn.textContent;
-            
-            // Efecto celebración Gen Z
-            btn.textContent = '¡Uff, enviado! 🔥';
-            btn.style.background = 'linear-gradient(45deg, #00ff88, #00d4ff)';
-            btn.style.color = '#0a0a0a';
-            
-            // Confetti effect simple
-            createConfetti();
-            
-            contactForm.reset();
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-                btn.style.color = '';
-            }, 3500);
-        }
-    });
-}
-
-// Crear confetti simple
-function createConfetti() {
-    const colors = ['#00d4ff', '#ff006e', '#8f00ff', '#00ff88'];
-    for (let i = 0; i < 20; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.position = 'fixed';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.top = '-10px';
-        confetti.style.width = '10px';
-        confetti.style.height = '10px';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.borderRadius = '50%';
-        confetti.style.zIndex = '9999';
-        confetti.style.pointerEvents = 'none';
-        confetti.style.boxShadow = `0 0 10px ${confetti.style.background}`;
-        
-        document.body.appendChild(confetti);
-        
-        // Animación
-        let top = -10;
-        const speed = Math.random() * 3 + 2;
-        const drift = (Math.random() - 0.5) * 2;
-        
-        const interval = setInterval(() => {
-            top += speed;
-            confetti.style.top = top + 'px';
-            confetti.style.left = (parseFloat(confetti.style.left) + drift) + '%';
-            confetti.style.opacity = 1 - (top / window.innerHeight);
-            
-            if (top > window.innerHeight) {
-                clearInterval(interval);
-                document.body.removeChild(confetti);
-            }
-        }, 30);
-    }
-}
 
 // ============ SCROLL SUAVE ============
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -146,10 +152,9 @@ const galeriaModalImg = document.querySelector('.galeria-modal-img');
 const galeriaClose = document.querySelector('.galeria-close');
 
 let currentPage = 0;
-const itemsPerPage = 9; // mostrar 9 imágenes por página
+const itemsPerPage = 9; 
 let currentImageIndex = 0;
 
-// Mostrar imágenes por página
 function showPage(page) {
     galeriaItems.forEach((item, index) => {
         if (index >= page * itemsPerPage && index < (page + 1) * itemsPerPage) {
@@ -161,7 +166,6 @@ function showPage(page) {
 }
 if (galeriaItems.length > 0) showPage(currentPage);
 
-// Botón anterior (paginación)
 if (prevBtn) {
     prevBtn.addEventListener('click', () => {
         if (currentPage > 0) {
@@ -171,7 +175,6 @@ if (prevBtn) {
     });
 }
 
-// Botón siguiente (paginación)
 if (nextBtn) {
     nextBtn.addEventListener('click', () => {
         if ((currentPage + 1) * itemsPerPage < galeriaItems.length) {
@@ -181,7 +184,6 @@ if (nextBtn) {
     });
 }
 
-// Abrir modal al hacer click en imagen
 galeriaItems.forEach((item, index) => {
     item.addEventListener('click', () => {
         currentImageIndex = index;
@@ -190,7 +192,6 @@ galeriaItems.forEach((item, index) => {
     });
 });
 
-// Cerrar modal
 if (galeriaClose) {
     galeriaClose.addEventListener('click', () => {
         galeriaModal.classList.remove('active');
@@ -202,7 +203,6 @@ galeriaModal.addEventListener('click', (e) => {
     }
 });
 
-// Navegación dentro del modal con flechas
 if (prevBtn) {
     prevBtn.addEventListener('click', () => {
         currentImageIndex = (currentImageIndex - 1 + galeriaItems.length) % galeriaItems.length;
@@ -216,7 +216,6 @@ if (nextBtn) {
     });
 }
 
-// Navegación con teclado
 document.addEventListener('keydown', (e) => {
     if (galeriaModal.classList.contains('active')) {
         if (e.key === 'ArrowLeft') {

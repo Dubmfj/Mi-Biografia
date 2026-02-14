@@ -249,8 +249,8 @@
         </div>
 
         <div class="galeria-nav">
-            <button class="galeria-btn-prev"><i class="fas fa-chevron-left"></i></button>
-            <button class="galeria-btn-next"><i class="fas fa-chevron-right"></i></button>
+            <button class="galeria-btn-prev" aria-label="Anterior" title="Anterior (←)"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <button class="galeria-btn-next" aria-label="Siguiente" title="Siguiente (→)"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
         </div>
     </section>
 
@@ -271,10 +271,22 @@
                 Este video saldra el Dia de mañana a las 12:00 pm</p>
             
             <div class="futuro-content">
-            <video controls poster="preview.jpg" class="futuro-video">
-                <source src="video-futuro.mp4" type="video/mp4">
-                Tu navegador no soporta video HTML5.
-            </video>
+            <div class="futuro-video-container">
+                <video id="futuroVideo" poster="images.png" class="futuro-video">
+                    <source src="video.mp4" type="video/mp4">
+                    Tu navegador no soporta video HTML5.
+                </video>
+
+                <div class="video-controls" role="region" aria-label="Controles de video">
+                    <button class="vc-play" aria-label="Reproducir" title="Reproducir"><i class="fas fa-play" aria-hidden="true"></i></button>
+                    <div class="vc-progress" aria-label="Barra de progreso">
+                        <div class="vc-progress-filled"></div>
+                    </div>
+                    <div class="vc-time">0:00 / 0:00</div>
+                    <input class="vc-volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volumen">
+                    <button class="vc-fullscreen" aria-label="Pantalla completa" title="Pantalla completa"><i class="fas fa-expand" aria-hidden="true"></i></button>
+                </div>
+            </div>
             <div class="futuro-text">
                 <p>Este es un video dedicado para mi yo en 10 años, lo volveré a abrir el 13/02/2036 con ya 26 años.</p>
                 <p>Espero que este video sea un recordatorio de mi pasión por aprender, crear y nunca rendirme 💯.</p>
